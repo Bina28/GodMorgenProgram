@@ -7,7 +7,7 @@ Dictionary<string, List<string>> timeGreetings = new()
     "Good morning, sunshine! Smile and enjoy the day!",
     "Morning energy is ready for you! Start your day with a smile."
     ],
-    ["aftenoon"] = ["Good afternoon! Hope your day is going smoothly.",
+    ["afternoon"] = ["Good afternoon! Hope your day is going smoothly.",
     "Afternoon! Keep up the great work and stay positive.",
     "Hello! Wishing you a productive and cheerful afternoon.",
     "Good afternoon! Take a short break and enjoy the moment."],
@@ -21,39 +21,47 @@ Dictionary<string, List<string>> timeGreetings = new()
     "Good night! Prepare for a fresh start tomorrow."]
 };
 
-Dictionary<string, string> specialGreetings = new() { { "Albina", "Kjør på" } };
+Dictionary<string, string> specialGreetings = new()
+{
+    { "Albina", "Kjør på" }
+};
+
 Random random = new();
 void Run()
-{
+{   
     while (true)
     {
+       
         Console.WriteLine("Hello! Please enter your name (or 'exit' to quit):");
         string? name = Console.ReadLine();
 
         if (string.IsNullOrEmpty(name)) continue;
         if (name.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
-        Console.WriteLine(GetGreeting(name, DateTime.Now.Hour));
+
+        Console.Clear();
+        Console.WriteLine($"{name}, welcome to Good Morning app");
+
+        if (specialGreetings.TryGetValue(name, out var special))
+        {
+            Console.WriteLine(special);
+            continue;
+        }
+
+        int hour = DateTime.Now.Hour;
+        string period = hour switch
+        {
+            >= 5 and <= 12 => "morning",
+            > 12 and <= 18 => "afternoon",
+            > 18 and <= 21 => "evening",
+            _ => "night"
+        };
+
+        var message = timeGreetings[period];
+        Console.WriteLine(message[random.Next(message.Count)]);
+        Console.WriteLine();
 
     }
 
-}
-
-string GetGreeting(string name, int hour)
-{   Console.Clear();
-    Console.WriteLine($"{name}, welcome to Good Morning app");
-    foreach (var kvp in specialGreetings)
-    {
-        if (kvp.Key.Equals(name, StringComparison.OrdinalIgnoreCase)) return kvp.Value;
-    }
-    string period = hour switch
-    {
-        >= 5 and <= 12 => "morning",
-        > 12 and <= 18 => "aftenoon",
-        > 18 and <= 21 => "evening",
-        _ => "night"
-    };
-    var message = timeGreetings[period];
-    return message[random.Next(message.Count)];
 }
 
 Run();
